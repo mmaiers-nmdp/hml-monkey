@@ -28,13 +28,6 @@ Lightweight HML parsing
 Features
 --------
 
-* TODO
+* hml_monkey is a module that reads a directory of HML files (xml.gz) and performs imple parsing  
 
-Credits
----------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 
