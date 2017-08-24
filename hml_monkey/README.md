@@ -4,8 +4,8 @@
 
 - Clone the repository 
 ```
-        git clone https://github.com/nmdp-bioinformatics/graph-imputation-match`
-        cd graph-imputation-match
+        git clone https://github.com/mmaiers-nmdp/hml-monkey`
+        cd hml-monkey
 ```
 
 - Setup Python3 virtual environment
