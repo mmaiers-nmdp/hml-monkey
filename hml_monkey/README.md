@@ -15,6 +15,12 @@
         piip install lxml
 ```
 
+- Set up liftovergl
+```
+        cd ~/src/git/liftoverGL
+        make 
+        python setup.py install
+```
 - Set up the path  and
 ```
         (edit hml_monkey/hml_monkey.py)

@@ -28,7 +28,12 @@ from lxml import etree
 from io import StringIO, BytesIO
 import re
 import gzip
+from gl_service import GLservice
 
+glv = GLservice()
+
+target = '3.25.0'
+source = '3.20.0'
 # local archive of HML
 hmldir = "/Volumes/Fat/HML"
 # network archive of HML
@@ -78,7 +83,18 @@ for i in (range(35,36)):
                    loc = getloc(gl)
             else:
                 loc = "NOLOC"
-            print("{}\t{}\t{}\t{}".format(i, reporting_center_id, id, loc))
+            #first lift it over
+            lgl = glv.liftover(gl, source, target)
+            lifted = 0
+            if lgl != gl:
+                lifted = 1
+
+            #then fix it
+            fgl = glv.fix(lgl)
+            fixed = 0
+            if fgl != lgl:
+                fixed = 1 
+            print(",".join(str(j) for j in [i, reporting_center_id, id, loc, gl, fgl,lifted, fixed]))
 
             if i not in d:
                 d[i] = {}
