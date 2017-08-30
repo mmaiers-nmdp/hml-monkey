@@ -24,12 +24,8 @@
 
 
 import sys
-# parse XML
-#import xml.etree.ElementTree as ET
 from lxml import etree
 from io import StringIO, BytesIO
-
-# regex
 import re
 import gzip
 
@@ -52,39 +48,48 @@ def getloc(glstring):
 
 # dictionary of results
 d={}
-#for i in (3000,3001,3003):
-#for i in (3000,3000):
-for i in (range(153,3111)):
-    #filename = "{}/{}.hml101.xml".format(hmldir, i)
+
+#for i in (range(1,3111)):
+for i in (range(35,36)):
     gzfilename = "{}/{}.hml101.xml.gz".format(hmldir, i)
     fileobject = gzip.open(gzfilename, 'rb')
     print ("open {}".format(gzfilename),file=sys.stderr)
     root = etree.parse(fileobject)
+
+    # reporting center
+    reporting_center  = root.find(schem+'reporting-center')
+    reporting_center_id = reporting_center.get('reporting-center-id')
+
+    # sample
     for sample in root.findall(schem+'sample'):
         id = sample.get('id')
         # remove hyphens
-        id.replace("-","")
-        #print("id:", id)
+        id = id.replace("-","")
+        # typing
         for typing in sample.findall(schem+'typing'):
+            # allele assignment
             allele_assignment = typing.find(schem+'allele-assignment')
-            #print("allele_assignment", allele_assignment)  
+            # glstring
             glstring = allele_assignment.find(schem+'glstring')
-            #print(id, glstring.text)  
-            if glstring:
-                loc = getloc(glstring.text)
+            gl = None
+            if glstring is not None:
+                if glstring.text is not None:
+                   gl = glstring.text
+                   loc = getloc(gl)
             else:
                 loc = "NOLOC"
-            print("{}\t{}\t{}".format(i, id, loc))
+            print("{}\t{}\t{}\t{}".format(i, reporting_center_id, id, loc))
+
             if i not in d:
                 d[i] = {}
             if id not in d[i]:
                 d[i][id] = {}
-            d[i][id][loc]=loc
+            d[i][id][loc]= gl
 
 for i in d.keys():
     for id in d[i].keys():
         for loc in d[i][id].keys():
-            print("{}\t{}\t{}".format(i, id, loc))
+            print("dump\t{}\t{}\t{}\t{}".format(i, id, loc, d[i][id][loc]))
 # make a table of filename index, id, locus
 # use this to construct a massive index of all HML
 # run it on full archive

@@ -31,3 +31,6 @@ Features
 * hml_monkey is a module that reads a directory of HML files (xml.gz) and performs imple parsing  
 
 
+Warning
+-------
+* "Orangutan will not wear diaper" http://snltranscripts.jt.org/94/94cmonkey.phtml
