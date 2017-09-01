@@ -12,7 +12,7 @@
 ```
         virtualenv -p python3 venv
         source venv/bin/activate 
-        piip install lxml
+        pip install lxml
 ```
 
 - Set up liftovergl

@@ -20,6 +20,12 @@ class GLservice:
         self.url = "{}/{}/{}".format(service_url,ver, noun)
         #self.pattern =re.compile("HLA-[A-Z]*\*[0-9:*]")
         self.pattern =re.compile("(HLA-[A-Z0-9]*)\*([0-9:]*)")
+    def valver(self, glstring, version):
+        self.ver = version
+        self.url = "{}/{}/{}".format(service_url, self.ver, noun)
+        #print(self.url)
+        response = requests.post(self.url, data=glstring)
+        return response
     def val(self, glstring):
         #print(self.url)
         response = requests.post(self.url, data=glstring)
@@ -78,6 +84,19 @@ class GLservice:
 if __name__ == '__main__':  
     glv = GLservice()
 
+    #do some val
+    glstring = "HLA-DQB1*02:02:01:01+HLA-DQB1*04:02:01"
+    print("{} {}".format(glstring,glv.val(glstring)))
+
+    #do some valver
+    glstring = "HLA-DQB1*02:02:01:01+HLA-DQB1*04:02:01"
+    vers = "3.25.0";
+    print("{} {} {}".format(glstring, vers, glv.valver(glstring, vers)))
+    vers = "3.20.0";
+    print("{} {} {}".format(glstring, vers, glv.valver(glstring, vers)))
+
+
+
     # do some liftover
     source = "3.20.0"
     target = "3.25.0"
@@ -86,9 +105,9 @@ if __name__ == '__main__':
     print("{} {}".format(glstring,glv.liftover(glstring, source, target)))
     glstring = "HLA-DRB1*10:01:01+HLA-DRB1*14:04:01"
     print("{} {}".format(glstring,glv.liftover(glstring, source, target)))
+
     glstring = "HLA-DQB1*02:02:01:01+HLA-DQB1*04:02:01"
     print("{} {}".format(glstring,glv.fix(glstring)))
-
 
     glstring = "HLA-DQB1*02:02:01+HLA-DQB1*04:02:01"
     print("{} {}".format(glstring,glv.fix(glstring)))

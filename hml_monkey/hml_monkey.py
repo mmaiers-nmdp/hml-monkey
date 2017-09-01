@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#i -*- coding: utf-8 -*-
 
 #
 #    hml_monkey HML Monkey.
@@ -51,11 +51,24 @@ def getloc(glstring):
     else:
         return "NOLOC"
 
+# table of lab 744 files from first pass
+hfiles = {}
+firstpassfile = "pass1.txt"
+
+with open(firstpassfile, "r") as fp:
+    for line in (fp.readlines()):
+        [filenum, lab, id, loc]= re.split('\t', line) 
+        if lab == '744':
+            hfiles[filenum]=1
+    
 # dictionary of results
 d={}
 
 #for i in (range(1,3111)):
-for i in (range(35,36)):
+#for i in (range(35,36)):
+for i in (list(hfiles.keys())):
+    if int(i) < 40:
+        continue
     gzfilename = "{}/{}.hml101.xml.gz".format(hmldir, i)
     fileobject = gzip.open(gzfilename, 'rb')
     print ("open {}".format(gzfilename),file=sys.stderr)
@@ -74,6 +87,8 @@ for i in (range(35,36)):
         for typing in sample.findall(schem+'typing'):
             # allele assignment
             allele_assignment = typing.find(schem+'allele-assignment')
+            allele_db = allele_assignment.get('allele-db')
+            source = allele_assignment.get('allele-version')
             # glstring
             glstring = allele_assignment.find(schem+'glstring')
             gl = None
@@ -83,18 +98,31 @@ for i in (range(35,36)):
                    loc = getloc(gl)
             else:
                 loc = "NOLOC"
-            #first lift it over
+
+            
+            #first validate it
+            v = glv.valver(gl, source)
+            fixed = 0
+            if v.status_code ==400:
+                # if its not valid
+                # fix it
+                fgl = glv.fix(gl)
+                vv = glv.valver(fgl, source)
+                if vv.status_code ==400:
+                    # bailout
+                    continue
+                else:
+                    if fgl != gl:
+                        fixed = 1 
+                        gl = fgl 
+                
+            #then lift it over
             lgl = glv.liftover(gl, source, target)
             lifted = 0
             if lgl != gl:
                 lifted = 1
 
-            #then fix it
-            fgl = glv.fix(lgl)
-            fixed = 0
-            if fgl != lgl:
-                fixed = 1 
-            print(",".join(str(j) for j in [i, reporting_center_id, id, loc, gl, fgl,lifted, fixed]))
+            print(",".join(str(j) for j in [i, reporting_center_id, id, loc, gl, gl,source,lifted, fixed]))
 
             if i not in d:
                 d[i] = {}
@@ -102,10 +130,10 @@ for i in (range(35,36)):
                 d[i][id] = {}
             d[i][id][loc]= gl
 
-for i in d.keys():
-    for id in d[i].keys():
-        for loc in d[i][id].keys():
-            print("dump\t{}\t{}\t{}\t{}".format(i, id, loc, d[i][id][loc]))
+#for i in d.keys():
+#    for id in d[i].keys():
+#        for loc in d[i][id].keys():
+#            #print("dump\t{}\t{}\t{}\t{}".format(i, id, loc, d[i][id][loc]))
 # make a table of filename index, id, locus
 # use this to construct a massive index of all HML
 # run it on full archive
