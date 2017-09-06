@@ -37,7 +37,7 @@ source = '3.20.0'
 # local archive of HML
 hmldir = "/Volumes/Fat/HML"
 # network archive of HML
-hmldir = "/Volumes/bioxover/users/mmaiers/hml/hml"
+hmldir = "/home/ec2-user/hml"
 
 # this string seems to accompany elements
 schem = "{http://schemas.nmdp.org/spec/hml/1.0.1}"
@@ -53,13 +53,13 @@ def getloc(glstring):
 
 # table of lab 744 files from first pass
 hfiles = {}
-firstpassfile = "pass1.txt"
+firstpassfile = "744.txt"
 
 with open(firstpassfile, "r") as fp:
+    
     for line in (fp.readlines()):
-        [filenum, lab, id, loc]= re.split('\t', line) 
-        if lab == '744':
-            hfiles[filenum]=1
+        [filenum]= re.split('\t', line.rstrip('\n')) # I miss chomp
+        hfiles[filenum]=1
     
 # dictionary of results
 d={}
@@ -67,8 +67,8 @@ d={}
 #for i in (range(1,3111)):
 #for i in (range(35,36)):
 for i in (list(hfiles.keys())):
-    if int(i) < 40:
-        continue
+    #if int(i) < 40:
+    #    continue
     gzfilename = "{}/{}.hml101.xml.gz".format(hmldir, i)
     fileobject = gzip.open(gzfilename, 'rb')
     print ("open {}".format(gzfilename),file=sys.stderr)
