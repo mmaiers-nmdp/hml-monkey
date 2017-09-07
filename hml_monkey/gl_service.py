@@ -18,22 +18,26 @@ class GLservice:
         self.ver = ver
         self.service_url = service_url
         self.url = "{}/{}/{}".format(service_url,ver, noun)
+        self.history = liftovergl.read_history()
         #self.pattern =re.compile("HLA-[A-Z]*\*[0-9:*]")
         self.pattern =re.compile("(HLA-[A-Z0-9]*)\*([0-9:]*)")
     def valver(self, glstring, version):
         self.ver = version
-        self.url = "{}/{}/{}".format(service_url, self.ver, noun)
+        #self.url = "{}/{}/{}".format(service_url, self.ver, noun)
         #print(self.url)
-        response = requests.post(self.url, data=glstring)
-        return response
+        #response = requests.post(self.url, data=glstring)
+        r = liftovergl.mk_glids(glstring, version, self.history) 
+        return r
     def val(self, glstring):
         #print(self.url)
         response = requests.post(self.url, data=glstring)
         return response
     def liftover(self, glstring, source, target):
-        history = liftovergl.read_history()
-        gl_ids = liftovergl.mk_glids(glstring, source, history)
-        return (liftovergl.mk_target(gl_ids, target, history))
+        ret = liftovergl.mk_glids(glstring, source, self.history)
+        if ret.errorflag:
+            return(ret.retstring)   
+        else: 
+            return (liftovergl.mk_target(ret.retstring, target, self.history))
     def fix(self, glstring):
         r = self.val(glstring)
         if r.status_code == 201:
@@ -91,9 +95,9 @@ if __name__ == '__main__':
     #do some valver
     glstring = "HLA-DQB1*02:02:01:01+HLA-DQB1*04:02:01"
     vers = "3.25.0";
-    print("{} {} {}".format(glstring, vers, glv.valver(glstring, vers)))
+    print("{} {} {}".format(glstring, vers, glv.valver(glstring, vers).errorflag))
     vers = "3.20.0";
-    print("{} {} {}".format(glstring, vers, glv.valver(glstring, vers)))
+    print("{} {} {}".format(glstring, vers, glv.valver(glstring, vers).errorflag))
 
 
 
@@ -101,8 +105,10 @@ if __name__ == '__main__':
     source = "3.20.0"
     target = "3.25.0"
    
+    print ("hit1")
     glstring = "HLA-DRB1*08:01:01/HLA-DRB1*08:01:03"
     print("{} {}".format(glstring,glv.liftover(glstring, source, target)))
+    print ("hit2")
     glstring = "HLA-DRB1*10:01:01+HLA-DRB1*14:04:01"
     print("{} {}".format(glstring,glv.liftover(glstring, source, target)))
 

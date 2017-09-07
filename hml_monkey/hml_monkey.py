@@ -122,7 +122,7 @@ for i in (list(hfiles.keys())):
             if lgl != gl:
                 lifted = 1
 
-            print(",".join(str(j) for j in [i, reporting_center_id, id, loc, gl, gl,source,lifted, fixed]))
+            print(",".join(str(j) for j in [i, reporting_center_id, id, loc, gl, lgl,source,lifted, fixed]))
 
             if i not in d:
                 d[i] = {}
